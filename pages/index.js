@@ -2,33 +2,40 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Header from '@components/Header';
 import Footer from '@components/Footer';
-
-const socketUrl = process.env.NODE_ENV === 'production' 
-  ? 'wss://sorteos-test.netlify.app' 
-  : 'ws://localhost:3000';
-
-const socket = new WebSocket(socketUrl);
+import Pusher from 'pusher-js';
 
 export default function Home() {
   const [color, setColor] = useState('blue');
 
   useEffect(() => {
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'changeColor') {
-        setColor(data.color);
-      }
-    };
+    // Enable pusher logging - don't include this in production
+    Pusher.logToConsole = true;
+
+    const pusher = new Pusher('a19f60e40d10cf02b0d1', {
+      cluster: 'us3'
+    });
+
+    const channel = pusher.subscribe('my-channel');
+    channel.bind('changeColor', function(data) {
+      setColor(data.color);
+    });
 
     return () => {
-      socket.close();
+      pusher.unsubscribe('my-channel');
     };
   }, []);
 
   const handleClick = () => {
     const newColor = color === 'blue' ? 'red' : 'blue';
     setColor(newColor);
-    socket.send(JSON.stringify({ type: 'changeColor', color: newColor }));
+
+    fetch('/api/pusher', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ color: newColor })
+    });
   };
 
   return (
