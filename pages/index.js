@@ -3,7 +3,11 @@ import Head from 'next/head';
 import Header from '@components/Header';
 import Footer from '@components/Footer';
 
-const socket = new WebSocket('ws://localhost:3000');
+const socketUrl = process.env.NODE_ENV === 'production' 
+  ? 'wss://sorteos-test.netlify.app' 
+  : 'ws://localhost:3000';
+
+const socket = new WebSocket(socketUrl);
 
 export default function Home() {
   const [color, setColor] = useState('blue');
