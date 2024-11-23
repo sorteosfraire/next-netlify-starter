@@ -2,27 +2,29 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Header from '@components/Header';
 import Footer from '@components/Footer';
-import io from 'socket.io-client';
 
-const socket = io();
+const socket = new WebSocket('ws://localhost:3000');
 
 export default function Home() {
   const [color, setColor] = useState('blue');
 
   useEffect(() => {
-    socket.on('changeColor', (newColor) => {
-      setColor(newColor);
-    });
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'changeColor') {
+        setColor(data.color);
+      }
+    };
 
     return () => {
-      socket.off('changeColor');
+      socket.close();
     };
   }, []);
 
   const handleClick = () => {
     const newColor = color === 'blue' ? 'red' : 'blue';
     setColor(newColor);
-    socket.emit('changeColor', newColor);
+    socket.send(JSON.stringify({ type: 'changeColor', color: newColor }));
   };
 
   return (
