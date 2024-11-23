@@ -1,13 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Header from '@components/Header';
 import Footer from '@components/Footer';
+import io from 'socket.io-client';
+
+const socket = io();
 
 export default function Home() {
-  const [buttonColor, setButtonColor] = useState('blue');
+  const [color, setColor] = useState('blue');
 
-  const handleButtonClick = () => {
-    setButtonColor(buttonColor === 'blue' ? 'red' : 'blue');
+  useEffect(() => {
+    socket.on('changeColor', (newColor) => {
+      setColor(newColor);
+    });
+
+    return () => {
+      socket.off('changeColor');
+    };
+  }, []);
+
+  const handleClick = () => {
+    const newColor = color === 'blue' ? 'red' : 'blue';
+    setColor(newColor);
+    socket.emit('changeColor', newColor);
   };
 
   return (
@@ -23,8 +38,8 @@ export default function Home() {
           Get started by editing <code>pages/index.js</code>
         </p>
         <button
-          style={{ backgroundColor: buttonColor, color: 'white' }}
-          onClick={handleButtonClick}
+          style={{ backgroundColor: color, color: 'white' }}
+          onClick={handleClick}
         >
           Click me
         </button>
