@@ -9,11 +9,15 @@ const pusher = new Pusher({
 });
 
 export default function handler(req, res) {
-  const { color } = req.body;
+  if (req.method === 'POST') {
+    const { color } = req.body;
 
-  pusher.trigger('my-channel', 'changeColor', {
-    color: color
-  });
+    pusher.trigger('my-channel', 'changeColor', {
+      color: color
+    });
 
-  res.status(200).json({ success: true });
+    res.status(200).json({ success: true });
+  } else {
+    res.status(405).json({ error: 'Method not allowed' });
+  }
 }
