@@ -38,8 +38,8 @@ export default function Home() {
           Get started by editing <code>pages/index.js</code>
         </p>
         <button
-          style={{ backgroundColor: color, color: 'white' }}
           onClick={handleClick}
+          style={{ backgroundColor: color }}
         >
           Click me
         </button>
