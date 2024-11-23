@@ -7,6 +7,6 @@
 
 [[redirects]]
   from = "/socket.io/*"
-  to = "http://localhost:3000/socket.io/:splat"
+  to = "/.netlify/functions/server"
   status = 200
   force = true
