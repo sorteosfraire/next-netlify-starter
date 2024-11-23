@@ -4,3 +4,9 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+[[redirects]]
+  from = "/socket.io/*"
+  to = "http://localhost:3000/socket.io/:splat"
+  status = 200
+  force = true
