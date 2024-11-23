@@ -17,15 +17,13 @@ export default function Home() {
 
     const channel = pusher.subscribe('my-channel');
     channel.bind('changeColor', function(data) {
-      if (data.color !== color) {
-        setColor(data.color);
-      }
+      setColor(data.color);
     });
 
     return () => {
       pusher.unsubscribe('my-channel');
     };
-  }, [color]);
+  }, []);
 
   const handleClick = () => {
     const newColor = color === 'blue' ? 'red' : 'blue';
